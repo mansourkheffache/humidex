@@ -1,0 +1,28 @@
+<html>
+<head>
+
+<script type="text/javascript">
+
+	var ws = new WebSocket("ws://localhost:9999/websocket");
+
+	ws.onopen = function() {
+		var req = {
+			'type': 'query',
+			'time': 4950
+		};
+		ws.send(JSON.stringify(req));
+	};
+
+	ws.onmessage = function (evt) {
+		var res = JSON.parse(evt.data);
+		console.log(res)
+		document.body.innerHTML = res.message;
+	};
+</script>
+
+</head>
+
+<body>
+Niet.
+</body>
+</html>
