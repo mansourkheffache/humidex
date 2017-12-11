@@ -25,7 +25,16 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler):
             c.execute('SELECT * FROM entries WHERE timestamp>? ORDER BY timestamp DESC', t)
             results = c.fetchmany(size=20)
 
-            res = {'message': [dict(results[i]) for i in range(0, len(results))]}
+            keys = ['id', 'timestamp', 'temperature', 'humidity', 'humidex', 'power', 'traffic', 'co2', 'co2pbit', 'comfort']
+
+            res = {}
+            for k in keys:
+            	res[k] = [r[k] for r in results]
+
+            print res
+            print '##'
+
+            # res = {'message': [dict(results[i]) for i in range(0, len(results))]}
             self.write_message(res)
 
     def on_close(self):
@@ -48,6 +57,6 @@ def data_out():
 	pass
  
 if __name__ == "__main__":
-    app = make_app()
-    app.listen(9999)
-    tornado.ioloop.IOLoop.current().start()
+	app = make_app()
+	app.listen(9999)
+	tornado.ioloop.IOLoop.current().start()
