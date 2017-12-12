@@ -10,15 +10,6 @@ import socket
 import time
  
 
-# sqlite3 connections (write)
-conn_r = sqlite3.connect('local.db')
-conn_r.row_factory = sqlite3.Row
-c_r = conn_r.cursor()
-
-# sqlite3 connection (write)
-conn_w = sqlite3.connect('local.db')
-c_w = conn_w.cursor()
-
 # Tornado WS info
 WS_PORT = 9999
 
@@ -43,22 +34,30 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler):
         req = json.loads(message)
 
         if req['type'] == 'query':
-            t = (req['time'],)
-            c_r.execute('SELECT * FROM entries WHERE timestamp>? ORDER BY timestamp DESC', t)
-            results = c_r.fetchmany(size=20)
 
-            keys = ['timestamp', 'temperature', 'humidity', 'humidex', 'power', 'traffic', 'co2', 'co2pbit', 'comfort']
-            # unused fields: id
+        	# sqlite3 connections (read)
+			conn_r = sqlite3.connect('local.db')
+			conn_r.row_factory = sqlite3.Row
+			c_r = conn_r.cursor()
 
-            res = {}
-            for k in keys:
-            	res[k] = [r[k] for r in results]
+			t = (req['time'],)
+			c_r.execute('SELECT * FROM entries WHERE timestamp>? ORDER BY timestamp DESC', t)
+			results = c_r.fetchmany(size=20)
 
-            # print res
-            # print '##'
+			keys = ['timestamp', 'temperature', 'humidity', 'humidex', 'power', 'traffic', 'co2', 'co2pbit', 'comfort']
+			# unused fields: id
 
-            # res = {'message': [dict(results[i]) for i in range(0, len(results))]}
-            self.write_message(res)
+			res = {}
+			for k in keys:
+				res[k] = [r[k] for r in results]
+
+			# print res
+			# print '##'
+
+			# res = {'message': [dict(results[i]) for i in range(0, len(results))]}
+
+			conn_r.close()
+			self.write_message(res)
 
     def on_close(self):
         print("WebSocket closed")
@@ -96,18 +95,30 @@ def run_datacapture():
 		# get SNMP data
 		# format database record
 		# insert
-		# bye
+		# bye	
+
+		# sqlite3 connection (write)
+		conn_w = sqlite3.connect('local.db')
+		c_w = conn_w.cursor()
+
 
 		time.sleep(1)
-		print arduino_data
+
+		if arduino_data != -1:
+			print '----'
+			print arduino_data
+			data = json.loads(arduino_data)
+			print data['t']
+
+		conn_w.close()
 
 def stop_datacapture():
 	print 'Stopping Data-Capture service...'
 
 def stop_db():
 	print 'Closing database connections...'
-	conn_r.close()
-	conn_w.close()
+	# conn_r.close()
+	# conn_w.close()
 
 if __name__ == "__main__":
 
