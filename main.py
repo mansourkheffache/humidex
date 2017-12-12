@@ -7,6 +7,7 @@ import threading
 import sqlite3
 import json
 import socket
+import time
  
 
 # sqlite3 connections (write)
@@ -18,10 +19,15 @@ c_r = conn_r.cursor()
 conn_w = sqlite3.connect('local.db')
 c_w = conn_w.cursor()
 
+# Tornado WS info
+WS_PORT = 9999
 
 # UDP info
 UDP_IP = '192.168.5.3'
 UDP_PORT = 5005
+
+# globals
+arduino_data = -1
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -60,7 +66,7 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler):
 def run_tornado():
 	print 'Starting Tornado service...'
 	app =  tornado.web.Application([(r"/websocket", EchoWebSocket),])
-	app.listen(9999)
+	app.listen(WS_PORT)
 	tornado.ioloop.IOLoop.current().start()
 
 def stop_tornado():
@@ -72,18 +78,41 @@ def run_arduino_udp():
 	sock.bind((UDP_IP, UDP_PORT))
 
 	while True:
-		data = sock.recv(1024)
+		global arduino_data
+		arduino_data = sock.recv(1024)
 		# handle receive
-		print "received message:", data
+		# print "received message:", data
 
 def stop_arduino_udp():
 	print 'Stopping Arduino-UDP service...'
 	sock.close()
 
+def run_datacapture():
+	print 'Starting Data-Capture service...'
+
+	global arduino_data
+	while True:
+		# get arduino data
+		# get SNMP data
+		# format database record
+		# insert
+		# bye
+
+		time.sleep(1)
+		print arduino_data
+
+def stop_datacapture():
+	print 'Stopping Data-Capture service...'
+
+def stop_db():
+	print 'Closing database connections...'
+	conn_r.close()
+	conn_w.close()
+
 if __name__ == "__main__":
 
 	# start threads
-	for target in (run_tornado, run_arduino_udp):
+	for target in (run_tornado, run_arduino_udp, run_datacapture):
 		thread = threading.Thread(target=target)
 		thread.daemon = True
 		thread.start()
@@ -98,7 +127,6 @@ if __name__ == "__main__":
 		print 'Stopping all services...'
 		stop_tornado()
 		stop_arduino_udp()
+		stop_datacapture()
+		stop_db()
 		exit(0)
-
-
-	
