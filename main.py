@@ -2,12 +2,28 @@
 import tornado.ioloop
 import tornado.websocket
 
+import threading
+
 import sqlite3
 import json
+import socket
  
-conn = sqlite3.connect('local.db')
-conn.row_factory = sqlite3.Row
-c = conn.cursor()
+
+# sqlite3 connections (write)
+conn_r = sqlite3.connect('local.db')
+conn_r.row_factory = sqlite3.Row
+c_r = conn_r.cursor()
+
+# sqlite3 connection (write)
+conn_w = sqlite3.connect('local.db')
+c_w = conn_w.cursor()
+
+
+# UDP info
+UDP_IP = '192.168.5.3'
+UDP_PORT = 5005
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 class EchoWebSocket(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
@@ -22,41 +38,67 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler):
 
         if req['type'] == 'query':
             t = (req['time'],)
-            c.execute('SELECT * FROM entries WHERE timestamp>? ORDER BY timestamp DESC', t)
-            results = c.fetchmany(size=20)
+            c_r.execute('SELECT * FROM entries WHERE timestamp>? ORDER BY timestamp DESC', t)
+            results = c_r.fetchmany(size=20)
 
-            keys = ['id', 'timestamp', 'temperature', 'humidity', 'humidex', 'power', 'traffic', 'co2', 'co2pbit', 'comfort']
+            keys = ['timestamp', 'temperature', 'humidity', 'humidex', 'power', 'traffic', 'co2', 'co2pbit', 'comfort']
+            # unused fields: id
 
             res = {}
             for k in keys:
             	res[k] = [r[k] for r in results]
 
-            print res
-            print '##'
+            # print res
+            # print '##'
 
             # res = {'message': [dict(results[i]) for i in range(0, len(results))]}
             self.write_message(res)
 
     def on_close(self):
         print("WebSocket closed")
-
-def make_app():
-    return tornado.web.Application([
-        (r"/websocket", EchoWebSocket),
-    ])
-
-def data_in():
-	# read arduino
-
-	# read SNMP
-
-	# write to db
-	pass
-
-def data_out():
-	pass
  
-if __name__ == "__main__":
-	app = make_app()
+def run_tornado():
+	print 'Starting Tornado service...'
+	app =  tornado.web.Application([(r"/websocket", EchoWebSocket),])
 	app.listen(9999)
 	tornado.ioloop.IOLoop.current().start()
+
+def stop_tornado():
+	print 'Stopping Tornado service...'
+	tornado.ioloop.IOLoop.current().stop()
+
+def run_arduino_udp():
+	print 'Starting Arduino-UDP service...'
+	sock.bind((UDP_IP, UDP_PORT))
+
+	while True:
+		data = sock.recv(1024)
+		# handle receive
+		print "received message:", data
+
+def stop_arduino_udp():
+	print 'Stopping Arduino-UDP service...'
+	sock.close()
+
+if __name__ == "__main__":
+
+	# start threads
+	for target in (run_tornado, run_arduino_udp):
+		thread = threading.Thread(target=target)
+		thread.daemon = True
+		thread.start()
+
+	print '## Services running - Ctrl+C to stop'
+
+	# idle until shutdown signal
+	try:
+		while True:
+			raw_input('')
+	except KeyboardInterrupt:
+		print 'Stopping all services...'
+		stop_tornado()
+		stop_arduino_udp()
+		exit(0)
+
+
+	
