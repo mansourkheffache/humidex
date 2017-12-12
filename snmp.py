@@ -1,12 +1,12 @@
 from easysnmp import Session
-import time
-from datetime import datetime
 
+switch_ip = '10.10.10.1'
+pdu_ip = '10.10.10.151'
 
 # QUERIES THE PDU FOR POWER ON ALL OUTLETS (8)
 # RETURNS A SUM OF ACTUAL POWER FOR ALL OUTLETS IN WATTS
 def getPower():
-    session = Session(hostname="10.10.10.151", community='perccom', version=2)
+    session = Session(hostname=pdu_ip, community='perccom', version=2)
     sum = 0
     for i in range(1,9):
         snmp_response = session.get('1.3.6.1.4.1.13742.6.5.4.3.1.4.1.' + str(i) + ".5")
@@ -16,8 +16,8 @@ def getPower():
 
 # QUERY THE SWITCH (10.10.10.1) FOR IN AND OUT BYTES
 # RETURNS SUM FOR ALL PORTS (IN AND OUT DIRECTION)
-def getBytes(ip):
-    session = Session(hostname=ip, community='perccom', version=2)
+def getBytes():
+    session = Session(hostname=switch_ip, community='perccom', version=2)
     # IN OCTETS
     inOctets = 0
     for i in range(1,25):
@@ -38,22 +38,3 @@ def getBytes(ip):
 
     # RETURN THE SUM
     return inOctets + outOctets
-
-
-# ONLY FOR SOME PRINTING AND DEBUGGING S***T
-def main():
-    prevBytes = 0
-    while True:
-        time.sleep(1)
-        print "Current Bytes: [" + str(getBytes("10.10.10.1")) + "] ... Current Power: [" + str(getPower()) + "]"
-    #     time.sleep(1)
-    #     currentBytes = getBytes("10.10.10.1")
-    #     if prevBytes == 0:
-    #         print str(datetime.now()) + " : "+ str(currentBytes) + "(diff: N/A) ---- CURRENT POWER: " + str(getPower())
-    #     else:
-    #         print str(datetime.now()) + " : "+ str(currentBytes) + "(diff:" + str(currentBytes-prevBytes) +") ---- CURRENT POWER:" + str(getPower())
-    #     prevBytes = currentBytes
-
-
-if  __name__ =='__main__':
-    main()
