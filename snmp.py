@@ -18,23 +18,18 @@ def get_power():
 # RETURNS SUM FOR ALL PORTS (IN AND OUT DIRECTION)
 def get_traffic():
     session = Session(hostname=switch_ip, community='perccom', version=2)
-    # IN OCTETS
+    # variable to hold SNMP return values
     inOctets = 0
-    for i in range(1,25):
-        if i < 10:
-            snmp_response = session.get('1.3.6.1.2.1.2.2.1.10.1010' + str(i))
-        else:
-            snmp_response = session.get('1.3.6.1.2.1.2.2.1.10.101' + str(i))
-        inOctets += int(snmp_response.value)
-
-    # OUT OCTETS
     outOctets = 0
+    #  Loop to get the necessary SNMP-GET queries
     for i in range(1,25):
         if i < 10:
-            snmp_response = session.get('1.3.6.1.2.1.2.2.1.16.1010' + str(i))
+            bytes_in = session.get('1.3.6.1.2.1.2.2.1.10.1010' + str(i))
+            bytes_out = session.get('1.3.6.1.2.1.2.2.1.16.1010' + str(i))
         else:
-            snmp_response = session.get('1.3.6.1.2.1.2.2.1.16.101' + str(i))
-        outOctets += int(snmp_response.value)
-
-    # RETURN THE SUM
+            bytes_in = session.get('1.3.6.1.2.1.2.2.1.10.101' + str(i))
+            bytes_out = session.get('1.3.6.1.2.1.2.2.1.16.101' + str(i))
+        inOctets += int(bytes_in.value)
+        outOctets += int(bytes_out.value)
+    # RETURN IN + OUT BYTES
     return inOctets + outOctets
