@@ -2,12 +2,15 @@
 import tornado.ioloop
 import tornado.websocket
 
-import threading
 
+import threading
 import sqlite3
 import json
 import socket
 import time
+from datetime import datetime
+
+import snmp
  
 
 # Tornado WS info
@@ -91,26 +94,39 @@ def run_datacapture():
 
 	global arduino_data
 	while True:
-		# get arduino data
-		# get SNMP data
-		# format database record
-		# insert
-		# bye	
 
-		# sqlite3 connection (write)
-		conn_w = sqlite3.connect('local.db')
-		c_w = conn_w.cursor()
+		# 1 sec delay
+		sleep(1)
 
-
-		time.sleep(1)
-
+		# wait for arduino data to be received
 		if arduino_data != -1:
-			print '----'
-			print arduino_data
-			data = json.loads(arduino_data)
-			print data['t']
+			print ' # Capturing data: ' + datetime.now()
 
-		conn_w.close()
+			# get arduino data
+			sensor_data = json.loads(arduino_data)
+
+			# get SNMP data
+			traffic = snmp.get_traffic()
+			power = snmp.get_power()
+
+			co2 = 
+			co2pbit =
+			humidex = 
+			comfort = 
+
+			timestamp = int(round(time.time()))
+
+			# format database record
+			# insert
+			# bye
+
+			# sqlite3 connection (write)
+			conn_w = sqlite3.connect('local.db')
+			c_w = conn_w.cursor()
+
+			conn_w.close()
+		else:
+			print ' # No sensor data'
 
 def stop_datacapture():
 	print 'Stopping Data-Capture service...'

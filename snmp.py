@@ -5,7 +5,7 @@ pdu_ip = '10.10.10.151'
 
 # QUERIES THE PDU FOR POWER ON ALL OUTLETS (8)
 # RETURNS A SUM OF ACTUAL POWER FOR ALL OUTLETS IN WATTS
-def getPower():
+def get_power():
     session = Session(hostname=pdu_ip, community='perccom', version=2)
     sum = 0
     for i in range(1,9):
@@ -16,7 +16,7 @@ def getPower():
 
 # QUERY THE SWITCH (10.10.10.1) FOR IN AND OUT BYTES
 # RETURNS SUM FOR ALL PORTS (IN AND OUT DIRECTION)
-def getBytes():
+def get_traffic():
     session = Session(hostname=switch_ip, community='perccom', version=2)
     # IN OCTETS
     inOctets = 0
