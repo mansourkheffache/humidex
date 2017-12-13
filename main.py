@@ -8,6 +8,7 @@ import sqlite3
 import json
 import socket
 import time
+import math
 from datetime import datetime
 
 import snmp
@@ -44,10 +45,10 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler):
 			c_r = conn_r.cursor()
 
 			t = (req['time'],)
-			c_r.execute('SELECT * FROM entries WHERE timestamp>? ORDER BY timestamp DESC', t)
+			c_r.execute('SELECT * FROM monitories WHERE tstamp>? ORDER BY tstamp DESC', t)
 			results = c_r.fetchmany(size=20)
 
-			keys = ['timestamp', 'temperature', 'humidity', 'humidex', 'power', 'traffic', 'co2', 'co2pbit', 'comfort']
+			keys = ['tstamp', 'temperature', 'humidity', 'humidex', 'power', 'energy', 'traffic', 'co2', 'co2pbit', 'comfort']
 			# unused fields: id
 
 			res = {}
@@ -81,7 +82,9 @@ def run_arduino_udp():
 
 	while True:
 		global arduino_data
-		arduino_data = sock.recv(1024)
+		# arduino_data = sock.recv(1024)
+		arduino_data = '{"t": 20, "h": 20}'
+		time.sleep(5)
 		# handle receive
 		# print "received message:", data
 
@@ -93,10 +96,18 @@ def run_datacapture():
 	print 'Starting Data-Capture service...'
 
 	global arduino_data
+	# fake
+	# arduino_data = {'t': 20, 'h': 20}
+
+
+	# init
+	traffic0 = snmp.get_traffic()
+	energy = 0.0
+
 	while True:
 
 		# 1 sec delay
-		sleep(1)
+		time.sleep(1)
 
 		# wait for arduino data to be received
 		if arduino_data != -1:
@@ -106,23 +117,49 @@ def run_datacapture():
 			sensor_data = json.loads(arduino_data)
 
 			# get SNMP data
-			traffic = snmp.get_traffic()
-			power = snmp.get_power()
+			traffic = snmp.get_traffic() - traffic0		# delta-bytes
+			power = snmp.get_power()					# W
 
-			co2 = 
-			co2pbit =
-			humidex = 
-			comfort = 
+			# accumulate power
+			energy += power / 3600.0
+
+			# 82 CO2-g/KWh
+			co2 = energy * 0.082
+			co2pbit = co2 / (traffic * 8)
+
+			##################################################################################################		
+			# sensor_data['t'] = 
+			# sensor_data['h'] = 
+
+			kelvin = sensor_data['t'] + 273;
+			eTs = 10 ** ((-2937.4 /kelvin) - 4.9283 * math.log(kelvin) / math.log(10) + 23.5471)
+			eTd = eTs * sensor_data['h'] / 100.0;
+
+			humidex = int(round(sensor_data['t'] + ((eTd-10)*5.0/9.0)))
+			##################################################################################################
+
+			if humidex < 25:
+				comfort = 1
+			elif humidex < 34:
+				comfort = 2
+			elif humidex < 40:
+				comfort = 3
+			elif humidex < 45:
+				comfort = 4
+			else:
+				comfort = 5
 
 			timestamp = int(round(time.time()))
-
-			# format database record
-			# insert
-			# bye
 
 			# sqlite3 connection (write)
 			conn_w = sqlite3.connect('local.db')
 			c_w = conn_w.cursor()
+
+			# insert data
+			c_w.execute("INSERT INTO monitories (tstamp, temperature, humidity, humidex, power, energy, traffic, co2, co2pbit, comfort) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (timestamp, sensor_data['t'], sensor_data['h'], humidex, power, energy, traffic, co2, co2pbit, comfort))
+
+			# commit the changes
+			conn_w.commit()
 
 			conn_w.close()
 		else:
