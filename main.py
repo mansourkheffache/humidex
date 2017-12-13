@@ -12,13 +12,13 @@ import math
 from datetime import datetime
 
 import snmp
- 
+
 
 # Tornado WS info
 WS_PORT = 9999
 
 # UDP info
-UDP_IP = '192.168.5.3'
+UDP_IP = 'localhost'
 UDP_PORT = 5005
 
 # globals
@@ -29,10 +29,10 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 class EchoWebSocket(tornado.websocket.WebSocketHandler):
     def check_origin(self, origin):
         return True
- 
+
     def open(self):
         print("WebSocket opened")
- 
+
     def on_message(self, message):
 
         req = json.loads(message)
@@ -65,7 +65,7 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler):
 
     def on_close(self):
         print("WebSocket closed")
- 
+
 def run_tornado():
 	print 'Starting Tornado service...'
 	app =  tornado.web.Application([(r"/websocket", EchoWebSocket),])
@@ -111,7 +111,7 @@ def run_datacapture():
 
 		# wait for arduino data to be received
 		if arduino_data != -1:
-			print ' # Capturing data: ' + datetime.now()
+			print ' # Capturing data: ' + str(datetime.now())
 
 			# get arduino data
 			sensor_data = json.loads(arduino_data)
@@ -127,9 +127,9 @@ def run_datacapture():
 			co2 = energy * 0.082
 			co2pbit = co2 / (traffic * 8)
 
-			##################################################################################################		
-			# sensor_data['t'] = 
-			# sensor_data['h'] = 
+			##################################################################################################
+			# sensor_data['t'] =
+			# sensor_data['h'] =
 
 			kelvin = sensor_data['t'] + 273;
 			eTs = 10 ** ((-2937.4 /kelvin) - 4.9283 * math.log(kelvin) / math.log(10) + 23.5471)
@@ -156,7 +156,7 @@ def run_datacapture():
 			c_w = conn_w.cursor()
 
 			# insert data
-			c_w.execute("INSERT INTO monitories (tstamp, temperature, humidity, humidex, power, energy, traffic, co2, co2pbit, comfort) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (timestamp, sensor_data['t'], sensor_data['h'], humidex, power, energy, traffic, co2, co2pbit, comfort))
+			c_w.execute("INSERT INTO monitories (tstamp, temperature, humidity, humidex, power, energy, traffic, co2, co2pbit, comfort) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",  (timestamp, sensor_data['t'], sensor_data['h'], humidex, power, energy, traffic, co2, co2pbit, comfort))
 
 			# commit the changes
 			conn_w.commit()
