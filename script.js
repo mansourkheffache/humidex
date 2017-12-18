@@ -15,7 +15,9 @@ Array.prototype.zip = function (arr) {
 };
 
 //webSocket initialization
-ws = new WebSocket("ws://10.10.10.100:9999/websocket");
+//ws = new WebSocket("ws://10.10.10.100:9999/websocket");
+ws = new WebSocket("ws://0.0.0.0:9999/websocket");
+
 ws.onopen = function() {
     var req = {
         'type': 'query',
@@ -450,13 +452,13 @@ function addPointToChart(chartNumber,seriesNumber, point)
 }
 
 globalcounter=0;
-//somevar = [];
+somevar = [];
 function updateDiagram(res)
 {
     //console.log(res);
     //var comfort=res['tstamp'].zip(res['comfort'])
     //console.log(res);
-   // somevar=res;
+   somevar=res;
 
 
     for (var i = res['tstamp'].length - 1; i >= 0; i--) {
@@ -522,6 +524,15 @@ function updateDiagram(res)
     humidexchart[2].redraw();
     humidexchart[3].redraw();
     humidexchart[4].redraw();
+
+    document.getElementById('t1').innerHTML=res["temperature"][somevar["temperature"].length-1];
+    document.getElementById('t2').innerHTML=res["humidity"][somevar["humidity"].length-1];
+    document.getElementById('t3').innerHTML=res["humidex"][somevar["humidex"].length-1];
+    document.getElementById('t4').innerHTML=res["comfort"][somevar["comfort"].length-1];
+    document.getElementById('t5').innerHTML=res["power"][somevar["power"].length-1];
+    document.getElementById('t6').innerHTML=0;
+    document.getElementById('t7').innerHTML=res["co2pbit"][somevar["co2pbit"].length-1];
+    document.getElementById('t8').innerHTML=0;
 
 
     // for (var i = comfort.length - 1; i >= 0; i--) {
