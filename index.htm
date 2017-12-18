@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Highcharts Example</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap-grid.css">
+
+		<style type="text/css">
+
+#csv {
+	display: none;
+}
+		</style>
+	</head>
+	<body>
+		<!-- <script src="https://code.highcharts.com/stock/highstock.js"></script> -->
+<!-- <script src="https://code.highcharts.com/stock/modules/exporting.js"></script> -->
+<script src="./code/highcharts.js"></script>
+<script src="./code/modules/windbarb.js"></script>
+<script src="./code/modules/exporting.js"></script>
+
+<script src="./script.js"></script>
+
+
+
+<div id="header">Monitoring...</div>
+<div id="container" class="container">	
+<!-- <div class="row">
+	<div id="top-left" class="col-md-6 col-sm-6">salam</div>
+	<div id="top-right" class="col-md-6 col-sm-6">salam</div>
+	<div id="diagram-comfort" class="col-md-6 col-sm-6"></div>
+	 <div id="diagram-traffic"></div>
+
+
+</div> -->
+	<!-- <div id="diagram-all"></div> -->
+
+<div class="detail-section container row">
+	<div class="col-md-6 col-sm-6">	<div id="main-first"> </div></div>
+	<div class="col-md-6 col-sm-6">	<div id="main-second"> 
+	<div id="info" >
+		<div class="row">
+			<div class="first element col-md-6 col-sm-6">
+				<h2><em class="iconic"><img src="./icon2.png"></em>Temperature: <em>12</em>C</h2>
+				<h2><em class="iconic"><img src="./icon3.png"></em>Humidty: <em>43</em>%</h2>
+			</div>
+
+			<div class="second element col-md-6 col-sm-6">
+				<h1>24</h1> <h1>Humidex Level</h1>
+				<h5>Comfort Level: <em>44</em></h5>
+			</div>
+		</div>
+		<div class="row">
+			<div class="third element col-md-6 col-sm-6">
+				<h1><em class="iconic"><img src="./icon4.png"></em> <span>34</span>KW</h1>
+				<h3>consumed so far</h3>
+				<h5>RATE: <em>44</em> Kw/s</h5>
+			</div>
+
+
+			<div class="fourth element col-md-6 col-sm-6">
+				<h1><em class="iconic"><img src="./icon1.png"></em></h1>
+				<h1>1 bit = <em>12</em>g CO2</h1>
+				<h5>RATE: <em>33</em> CO2/s</h5>
+			</div>
+		</div>
+	</div>
+
+	</div></div>
+
+
+</div>
+
+<div class="detail-section container row">
+	<div class="col-md-6 col-sm-6">	<div id="detail-first"> </div></div>
+	<div class="col-md-6 col-sm-6">	<div id="detail-second"> </div></div>
+	<div class="col-md-12 col-sm-12">	<div id="detail-third"> </div></div>
+	<div class="col-md-6 col-sm-6">	<div id="detail-fourth"> </div></div>
+
+</div>
+</div>
+
+<button id="button" onclick="f1()">Add point</button>
+
+
+	</body>
+</html>
