@@ -15,8 +15,8 @@ Array.prototype.zip = function (arr) {
 };
 
 //webSocket initialization
-//ws = new WebSocket("ws://10.10.10.100:9999/websocket");
-ws = new WebSocket("ws://0.0.0.0:9999/websocket");
+ws = new WebSocket("ws://10.10.10.100:9999/websocket");
+//ws = new WebSocket("ws://0.0.0.0:9999/websocket");
 
 ws.onopen = function() {
     var req = {
