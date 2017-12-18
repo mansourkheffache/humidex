@@ -140,15 +140,18 @@ def run_datacapture():
     		co2 = energy * 0.082
     		co2pbit = co2 / (traffic * 8)
 
+            	temperature = sensor_data['t'] / 10.0
+            	humidity = sensor_data['h'] / 10.0
+
     		##################################################################################################
     		# sensor_data['t'] =
     		# sensor_data['h'] =
 
-    		kelvin = sensor_data['t'] + 273;
+    		kelvin = temperature + 273;
     		eTs = 10 ** ((-2937.4 /kelvin) - 4.9283 * math.log(kelvin) / math.log(10) + 23.5471)
-    		eTd = eTs * sensor_data['h'] / 100.0;
+    		eTd = eTs * humidity / 100.0;
 
-    		humidex = int(round(sensor_data['t'] + ((eTd-10)*5.0/9.0)))
+    		humidex = int(round(temperature + ((eTd-10)*5.0/9.0)))
     		##################################################################################################
 
     		if humidex < 25:
@@ -169,7 +172,7 @@ def run_datacapture():
     		c_w = conn_w.cursor()
 
     		# insert data
-    		c_w.execute("INSERT INTO monitories (tstamp, temperature, humidity, humidex, power, energy, traffic, co2, co2pbit, comfort) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",  (timestamp, sensor_data['t'], sensor_data['h'], humidex, power, energy, traffic, co2, co2pbit, comfort))
+    		c_w.execute("INSERT INTO monitories (tstamp, temperature, humidity, humidex, power, energy, traffic, co2, co2pbit, comfort) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",  (timestamp, temperature, humidity, humidex, power, energy, traffic, co2, co2pbit, comfort))
 
     		# commit the changes
     		conn_w.commit()
@@ -207,3 +210,4 @@ if __name__ == "__main__":
 		stop_datacapture()
 		stop_db()
 		exit(0)
+

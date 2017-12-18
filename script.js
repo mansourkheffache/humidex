@@ -15,7 +15,7 @@ Array.prototype.zip = function (arr) {
 };
 
 //webSocket initialization
-ws = new WebSocket("ws://localhost:9999/websocket");
+ws = new WebSocket("ws://10.10.10.100:9999/websocket");
 ws.onopen = function() {
     var req = {
         'type': 'query',
@@ -26,7 +26,7 @@ ws.onopen = function() {
 
 ws.onmessage = function (evt) {
     var res = JSON.parse(evt.data);
-    updateDiagram(res);        
+    updateDiagram(res);
 };
 
 setInterval(callServer,10000);
@@ -41,7 +41,7 @@ humidexchart[1]=new Highcharts.chart( {
     },
     title: {
         text: 'Comfort Diagram'
-    },   
+    },
     subtitle: {
         text: 'Temperature, Humidity, Humidex, Comfort Level'
     },
@@ -142,7 +142,7 @@ humidexchart[2]=new Highcharts.chart( {
         panKey: 'shift',
         yAxis:0,
         data: [
- 
+
         ],
         fillColor:'#2f7ed8',
         name: 'CO2 Emitted',
@@ -269,7 +269,7 @@ humidexchart[3]=new Highcharts.chart( {
         useHTML:'true',
         yAxis:1,
         data: [
- 
+
         ],
         fillColor:'#2f7ed8',
         name: 'Humidity',
@@ -454,18 +454,19 @@ globalcounter=0;
 function updateDiagram(res)
 {
     //console.log(res);
-    //var comfort=res['timestamp'].zip(res['comfort'])
+    //var comfort=res['tstamp'].zip(res['comfort'])
     //console.log(res);
-   // somevar=res; 
+   // somevar=res;
 
 
-    for (var i = res['timestamp'].length - 1; i >= 0; i--) {
+    for (var i = res['tstamp'].length - 1; i >= 0; i--) {
             //comfort level with emojies
         humidexchart[1].series[0].addPoint(
             {
-                x:res['timestamp'][i] +globalcounter,
-                y:res['comfort'][i], color: "#00FF00"
-                ,marker:{symbol:"url(emoji"+(6-comfort[i][1])+".png)"}
+                x:      res['tstamp'][i] + globalcounter,
+                y:      res['comfort'][i],
+                color:   "#00FF00",
+                marker: {symbol:"url(emoji"+(6-res['comfort'][i])+".png)"}
              }
         );
 
@@ -474,48 +475,48 @@ function updateDiagram(res)
 
         //co2 emitted
         humidexchart[2].series[0].addPoint({
-            x:res['timestamp'][i],
+            x:res['tstamp'][i],
             y:res['co2'][i]
         } );
 
         //co2pbit
         humidexchart[2].series[1].addPoint({
-            x:res['timestamp'][i],
+            x:res['tstamp'][i],
             y:res['co2pbit'][i]
         } );
 
         //temperature
         humidexchart[3].series[0].addPoint({
-            x:res['timestamp'][i],
+            x:res['tstamp'][i],
             y:res['temperature'][i]
         } );
                 //humidity
         humidexchart[3].series[1].addPoint({
-            x:res['timestamp'][i],
+            x:res['tstamp'][i],
             y:res['humidity'][i]
         } );
                 //humidex
         humidexchart[3].series[2].addPoint({
-            x:res['timestamp'][i],
+            x:res['tstamp'][i],
             y:res['humidex'][i]
         } );
                 //power
         humidexchart[4].series[0].addPoint({
-            x:res['timestamp'][i],
+            x:res['tstamp'][i],
             y:res['power'][i]
         } );
                 //traffic
         humidexchart[4].series[1].addPoint({
-            x:res['timestamp'][i],
+            x:res['tstamp'][i],
             y:res['traffic'][i]
         });
                 //energy
         // humidexchart[4].series[2].addPoint({
-        //     x:res['timestamp'][i],
+        //     x:res['tstamp'][i],
         //     y:res['energy'][i]
         // } );
 
-        
+
     }
     humidexchart[1].redraw();
     humidexchart[2].redraw();
@@ -540,11 +541,11 @@ function updateDiagram(res)
 
         // humidexchart[2].series[0].addPoint({
         //     x:
-        //     y: 
+        //     y:
         // } );
 
-        
-    
+
+
     globalcounter += 100;
 }
 
@@ -557,7 +558,7 @@ function updateDiagram(res)
 // in the series...
     // {
     //     type: 'windbarb',
-    //     data: 
+    //     data:
     //     [
     //     ],
     //     name: 'Wind',
@@ -566,12 +567,12 @@ function updateDiagram(res)
     //     tooltip: {
     //         valueSuffix: ' m/s'
     //     }
-    // }, 
+    // },
 
     // {
     //     type: 'scatter',
     //     keys: ['y', 'rotation'], // rotation is not used here
-    //     data: 
+    //     data:
     //     [],
     //     color: Highcharts.getOptions().colors[0],
     //     fillColor: {
