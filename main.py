@@ -18,11 +18,11 @@ import snmp
 WS_PORT = 9999
 
 # UDP info
-UDP_IP = 'localhost'
+UDP_IP = '10.10.10.100'
 UDP_PORT = 5005
 
 # globals
-arduino_data = -1
+arduino_data = '{"t": -1, "h": -1}'
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -81,10 +81,11 @@ def run_arduino_udp():
 	sock.bind((UDP_IP, UDP_PORT))
 
 	# 25 second timeout
+    # keep-alive packet sent every 10 seconds
 	sock.settimeout(25)
 
 	global arduino_data
-		
+
 	while True:
 		try:
 			arduino_data = sock.recv(1024)
@@ -93,7 +94,6 @@ def run_arduino_udp():
 			# handle receive
 			# print "received message:", data
  		except socket.timeout:
- 			print '# SENSOR UNREACHABLE'
  			arduino_data = '{"t": -1, "h": -1}'
 
 
@@ -103,78 +103,80 @@ def stop_arduino_udp():
 	sock.close()
 
 def run_datacapture():
-	print 'Starting Data-Capture service...'
+    print 'Starting Data-Capture service...'
 
-	global arduino_data
-	# fake
-	# arduino_data = {'t': 20, 'h': 20}
-
-
-	# init
-	traffic0 = snmp.get_traffic()
-	energy = 0.0
-
-	while True:
-
-		# 1 sec delay
-		time.sleep(1)
-
-		# wait for arduino data to be received
-		if arduino_data != -1:
-			print ' # Capturing data: ' + str(datetime.now())
-
-			# get arduino data
-			sensor_data = json.loads(arduino_data)
-
-			# get SNMP data
-			power = snmp.get_power()					# W
-			traffic = snmp.get_traffic() - traffic0		# delta-bytes
+    global arduino_data
+    # fake
+    # arduino_data = {'t': 20, 'h': 20}
 
 
-			# accumulate power
-			energy += power / 3600.0
+    # init
+    traffic0 = snmp.get_traffic()
+    energy = 0.0
 
-			# 82 CO2-g/KWh
-			co2 = energy * 0.082
-			co2pbit = co2 / (traffic * 8)
+    while True:
 
-			##################################################################################################
-			# sensor_data['t'] =
-			# sensor_data['h'] =
+        # 1 sec delay
+    	time.sleep(1)
 
-			kelvin = sensor_data['t'] + 273;
-			eTs = 10 ** ((-2937.4 /kelvin) - 4.9283 * math.log(kelvin) / math.log(10) + 23.5471)
-			eTd = eTs * sensor_data['h'] / 100.0;
+    	# get arduino data
+    	sensor_data = json.loads(arduino_data)
 
-			humidex = int(round(sensor_data['t'] + ((eTd-10)*5.0/9.0)))
-			##################################################################################################
+    	# wait for arduino data to be received
+        print sensor_data
+        if sensor_data['t'] != -1:
 
-			if humidex < 25:
-				comfort = 1
-			elif humidex < 34:
-				comfort = 2
-			elif humidex < 40:
-				comfort = 3
-			elif humidex < 45:
-				comfort = 4
-			else:
-				comfort = 5
+    		print ' # Capturing data: ' + str(datetime.now())
 
-			timestamp = int(round(time.time()))
+    		# get SNMP data
+    		power = snmp.get_power()					# W
+    		traffic = snmp.get_traffic() - traffic0		# delta-bytes
 
-			# sqlite3 connection (write)
-			conn_w = sqlite3.connect('local.db')
-			c_w = conn_w.cursor()
 
-			# insert data
-			c_w.execute("INSERT INTO monitories (tstamp, temperature, humidity, humidex, power, energy, traffic, co2, co2pbit, comfort) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",  (timestamp, sensor_data['t'], sensor_data['h'], humidex, power, energy, traffic, co2, co2pbit, comfort))
+    		# accumulate power
+    		energy += power / 3600.0
 
-			# commit the changes
-			conn_w.commit()
+    		# 82 CO2-g/KWh
+    		co2 = energy * 0.082
+    		co2pbit = co2 / (traffic * 8)
 
-			conn_w.close()
-		else:
-			print ' # No sensor data'
+    		##################################################################################################
+    		# sensor_data['t'] =
+    		# sensor_data['h'] =
+
+    		kelvin = sensor_data['t'] + 273;
+    		eTs = 10 ** ((-2937.4 /kelvin) - 4.9283 * math.log(kelvin) / math.log(10) + 23.5471)
+    		eTd = eTs * sensor_data['h'] / 100.0;
+
+    		humidex = int(round(sensor_data['t'] + ((eTd-10)*5.0/9.0)))
+    		##################################################################################################
+
+    		if humidex < 25:
+    			comfort = 1
+    		elif humidex < 34:
+    			comfort = 2
+    		elif humidex < 40:
+    			comfort = 3
+    		elif humidex < 45:
+    			comfort = 4
+    		else:
+    			comfort = 5
+
+    		timestamp = int(round(time.time()))
+
+    		# sqlite3 connection (write)
+    		conn_w = sqlite3.connect('local.db')
+    		c_w = conn_w.cursor()
+
+    		# insert data
+    		c_w.execute("INSERT INTO monitories (tstamp, temperature, humidity, humidex, power, energy, traffic, co2, co2pbit, comfort) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",  (timestamp, sensor_data['t'], sensor_data['h'], humidex, power, energy, traffic, co2, co2pbit, comfort))
+
+    		# commit the changes
+    		conn_w.commit()
+
+    		conn_w.close()
+        else:
+    			print '# SENSOR UNREACHABLE'
 
 def stop_datacapture():
 	print 'Stopping Data-Capture service...'
