@@ -80,13 +80,23 @@ def run_arduino_udp():
 	print 'Starting Arduino-UDP service...'
 	sock.bind((UDP_IP, UDP_PORT))
 
+	# 25 second timeout
+	sock.settimeout(25)
+
+	global arduino_data
+		
 	while True:
-		global arduino_data
-		# arduino_data = sock.recv(1024)
-		arduino_data = '{"t": 20, "h": 20}'
-		time.sleep(5)
-		# handle receive
-		# print "received message:", data
+		try:
+			arduino_data = sock.recv(1024)
+			# arduino_data = '{"t": 20, "h": 20}'
+			# time.sleep(5)
+			# handle receive
+			# print "received message:", data
+ 		except socket.timeout:
+ 			print '# SENSOR UNREACHABLE'
+ 			arduino_data = '{"t": -1, "h": -1}'
+
+
 
 def stop_arduino_udp():
 	print 'Stopping Arduino-UDP service...'
@@ -117,8 +127,9 @@ def run_datacapture():
 			sensor_data = json.loads(arduino_data)
 
 			# get SNMP data
-			traffic = snmp.get_traffic() - traffic0		# delta-bytes
 			power = snmp.get_power()					# W
+			traffic = snmp.get_traffic() - traffic0		# delta-bytes
+
 
 			# accumulate power
 			energy += power / 3600.0
