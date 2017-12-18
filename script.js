@@ -530,9 +530,9 @@ function updateDiagram(res)
     document.getElementById('t3').innerHTML=res["humidex"][somevar["humidex"].length-1];
     document.getElementById('t4').innerHTML=res["comfort"][somevar["comfort"].length-1];
     document.getElementById('t5').innerHTML=res["power"][somevar["power"].length-1];
-    document.getElementById('t6').innerHTML=0;
+   // document.getElementById('t6').innerHTML=0;
     document.getElementById('t7').innerHTML=res["co2pbit"][somevar["co2pbit"].length-1];
-    document.getElementById('t8').innerHTML=0;
+   // document.getElementById('t8').innerHTML=0;
 
 
     // for (var i = comfort.length - 1; i >= 0; i--) {
