@@ -135,10 +135,7 @@ humidexchart[2]=new Highcharts.chart( {
     title:{
         text:'CO2 emission'
     },
-    xAxis: {
-        //type: 'datetime',
-        //offset: 40,
-    },
+
 
     series: [
     {
@@ -247,11 +244,6 @@ humidexchart[3]=new Highcharts.chart( {
     title:{
         text:'Temperature/Humidity/Humidex'
     },
-    xAxis: {
-        //type: 'datetime',
-        //offset: 40,
-    },
-
     series: [
     {
         type: 'column',
@@ -368,11 +360,6 @@ humidexchart[4]=new Highcharts.chart( {
     title:{
         text:'Power/Traffic'
     },
-    xAxis: {
-        //type: 'datetime',
-        //offset: 40,
-    },
-
     series: [
 
     {

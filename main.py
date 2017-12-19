@@ -140,8 +140,8 @@ def run_datacapture():
     		co2 = energy * 0.082
     		co2pbit = co2 / (traffic * 8)
 
-            	temperature = sensor_data['t'] / 10.0
-            	humidity = sensor_data['h'] / 10.0
+           	temperature = sensor_data['t'] / 10.0
+           	humidity = sensor_data['h'] / 10.0
 
     		##################################################################################################
     		# sensor_data['t'] =
