@@ -453,6 +453,7 @@ function updateDiagram(res)
 
 
     for (var i = res['tstamp'].length - 1; i >= 0; i--) {
+      res['tstamp'][i]*=1000;
             //comfort level with emojies
         humidexchart[1].series[0].addPoint(
             {
@@ -506,7 +507,7 @@ function updateDiagram(res)
             x:res['tstamp'][i],
             y:res['traffic'][i]
         });
-        if(globalcounter>100)
+        if(globalcounter>1000)
         {
 
           humidexchart[1].series[0].data[0].remove();
