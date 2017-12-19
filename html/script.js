@@ -147,7 +147,7 @@ humidexchart[2]=new Highcharts.chart( {
         data: [
 
         ],
-        fillColor:'#2f7ed8',
+        fillColor:Highcharts.getOptions().colors[2],
         name: 'CO2 Emitted',
         tooltip: {
             valueSuffix: '  Gram per Second'
@@ -164,7 +164,7 @@ humidexchart[2]=new Highcharts.chart( {
         data: [
 
         ],
-        fillColor:'#2f7ed8',
+        fillColor:Highcharts.getOptions().colors[0],
         name: 'CO2 emission speed',
         tooltip: {
             valueSuffix: '  Gram per Second'
@@ -254,7 +254,7 @@ humidexchart[3]=new Highcharts.chart( {
         data: [
 
         ],
-        fillColor:'#2f7ed8',
+        fillColor:Highcharts.getOptions().colors[2],
         name: 'Temperature',
         tooltip: {
             valueSuffix: ' C'
@@ -269,7 +269,7 @@ humidexchart[3]=new Highcharts.chart( {
         data: [
 
         ],
-        fillColor:'#2f7ed8',
+        fillColor:Highcharts.getOptions().colors[0],
         name: 'Humidity',
         tooltip: {
             valueSuffix: ' %'
@@ -283,7 +283,7 @@ humidexchart[3]=new Highcharts.chart( {
         data: [
 
         ],
-        fillColor:'#2f7ed8',
+        fillColor:Highcharts.getOptions().colors[1],
         name: 'Humidex Level',
         tooltip: {
             valueSuffix: ' Humidex Index'
@@ -369,6 +369,8 @@ humidexchart[4]=new Highcharts.chart( {
         data: [
 
         ],
+        fillColor:Highcharts.getOptions().colors[2],
+
         //fillColor:'#2f7ed8',
         name: 'Power',
         tooltip: {
@@ -382,6 +384,8 @@ humidexchart[4]=new Highcharts.chart( {
         data: [
 
         ],
+        fillColor:Highcharts.getOptions().colors[0],
+
         //fillColor:'#2f7ed8',
         name: 'Traffic',
         tooltip: {
@@ -395,6 +399,8 @@ humidexchart[4]=new Highcharts.chart( {
         data: [
 
         ],
+        fillColor:Highcharts.getOptions().colors[1],
+
         //fillColor:'#2f7ed8',
         name: 'Energy',
         tooltip: {
