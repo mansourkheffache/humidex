@@ -515,7 +515,7 @@ function updateDiagram(res)
 
           humidexchart[2].series[1].data[0].remove();
 
-          humidexchart[3].series[0].data[0].remove();
+          // humidexchart[3].series[0].data[0].remove();
 
           humidexchart[3].series[1].data[0].remove();
 
