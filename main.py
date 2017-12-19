@@ -123,7 +123,7 @@ def run_datacapture():
     	sensor_data = json.loads(arduino_data)
 
     	# wait for arduino data to be received
-        print sensor_data
+        # print sensor_data
         if sensor_data['t'] != -1:
 
     		print ' # Capturing data: ' + str(datetime.now())
@@ -179,7 +179,7 @@ def run_datacapture():
 
     		conn_w.close()
         else:
-    			print '# SENSOR UNREACHABLE'
+    		print '# SENSOR UNREACHABLE'
 
 def stop_datacapture():
 	print 'Stopping Data-Capture service...'

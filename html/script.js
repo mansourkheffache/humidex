@@ -462,7 +462,6 @@ function updateDiagram(res)
                 marker: {symbol:"url(emoji"+(6-res['comfort'][i])+".png)"}
              }
         );
-
         //console.log('this is the size of the chart: '+humidexchart[1].series[0].length);
 
 
@@ -483,26 +482,51 @@ function updateDiagram(res)
             x:res['tstamp'][i],
             y:res['temperature'][i]
         } );
+
                 //humidity
         humidexchart[3].series[1].addPoint({
             x:res['tstamp'][i],
             y:res['humidity'][i]
         } );
+
                 //humidex
         humidexchart[3].series[2].addPoint({
             x:res['tstamp'][i],
             y:res['humidex'][i]
         } );
+
                 //power
         humidexchart[4].series[0].addPoint({
             x:res['tstamp'][i],
             y:res['power'][i]
         } );
+
                 //traffic
         humidexchart[4].series[1].addPoint({
             x:res['tstamp'][i],
             y:res['traffic'][i]
         });
+        if(globalcounter>100)
+        {
+
+          humidexchart[1].series[0].data[0].remove();
+
+          humidexchart[2].series[0].data[0].remove();
+
+          humidexchart[2].series[1].data[0].remove();
+
+          humidexchart[3].series[0].data[0].remove();
+
+          humidexchart[3].series[1].data[0].remove();
+
+          humidexchart[3].series[2].data[0].remove();
+
+          humidexchart[4].series[0].data[0].remove();
+
+
+          humidexchart[4].series[1].data[0].remove(); 
+        }
+
                 //energy
         // humidexchart[4].series[2].addPoint({
         //     x:res['tstamp'][i],

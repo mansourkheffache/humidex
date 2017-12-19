@@ -1,7 +1,7 @@
 from easysnmp import Session
 
 switch_ip = '10.10.10.1'
-pdu_ip = '10.10.10.151'
+pdu_ip = '10.10.10.153'
 
 # QUERIES THE PDU FOR POWER ON ALL OUTLETS (8)
 # RETURNS A SUM OF ACTUAL POWER FOR ALL OUTLETS IN WATTS
